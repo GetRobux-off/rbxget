@@ -261,23 +261,10 @@
     </div>
   </div>
 
-  <!-- SCREEN 2: Channel check -->
-  <div class="screen" id="screen-channel">
-    <div class="step-dots">
-      <div class="dot active"></div><div class="dot"></div><div class="dot"></div>
-    </div>
-    <div class="card">
-      <h1 class="title">Подпишись на канал</h1>
-      <p class="subtitle">Чтобы продолжить, подпишись на наш Telegram-канал. Это нужно, чтобы ты видел объявления о новых подарках.</p>
-      <button class="btn btn-primary" id="btn-join">📢 Подписаться на канал</button>
-      <button class="btn btn-outline" id="btn-check">Проверить подписку</button>
-    </div>
-  </div>
-
-  <!-- SCREEN 3: Amount -->
+  <!-- SCREEN 2: Amount -->
   <div class="screen" id="screen-amount">
     <div class="step-dots">
-      <div class="dot"></div><div class="dot active"></div><div class="dot"></div>
+      <div class="dot active"></div><div class="dot"></div>
     </div>
     <div class="card">
       <h1 class="title">Выбери сумму</h1>
@@ -296,10 +283,10 @@
     <button class="btn btn-primary" id="btn-continue" disabled>Продолжить</button>
   </div>
 
-  <!-- SCREEN 4: Confirmation -->
+  <!-- SCREEN 3: Confirmation -->
   <div class="screen" id="screen-confirm">
     <div class="step-dots">
-      <div class="dot"></div><div class="dot"></div><div class="dot active"></div>
+      <div class="dot"></div><div class="dot active"></div>
     </div>
     <div class="card" style="text-align:center;">
       <div class="success-icon">✅</div>
@@ -340,7 +327,6 @@
 
   const CHANNEL_URL = "https://t.me/getrobuxchanel";
   let selectedAmount = null;
-  let channelConfirmed = false;
 
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -356,33 +342,11 @@
     if (pct >= 100) {
       pct = 100;
       clearInterval(loadTimer);
-      setTimeout(() => showScreen('screen-channel'), 300);
+      setTimeout(() => showScreen('screen-amount'), 300);
     }
     fill.style.width = pct + '%';
     pctLabel.textContent = Math.floor(pct) + '%';
   }, 160);
-
-  // ---- Channel check ----
-  document.getElementById('btn-join').addEventListener('click', () => {
-    if (tg) tg.openTelegramLink(CHANNEL_URL);
-    else window.open(CHANNEL_URL, '_blank');
-  });
-
-  document.getElementById('btn-check').addEventListener('click', () => {
-    // Real check happens bot-side; the mini app asks the bot to verify
-    // and the bot replies via sendData, or you gate this screen using
-    // Telegram's getChatMember check triggered from the bot before
-    // opening the mini app. Here we hand off to the bot to confirm.
-    if (tg) {
-      tg.sendData(JSON.stringify({ action: "check_subscription" }));
-    }
-    // Optimistic UI - actual gating enforced server-side in the bot
-    channelConfirmed = true;
-    const btn = document.getElementById('btn-check');
-    btn.textContent = "✅ Подписка подтверждена";
-    btn.classList.add('confirmed');
-    setTimeout(() => showScreen('screen-amount'), 500);
-  });
 
   // ---- Amount selection ----
   document.querySelectorAll('.amount-card').forEach(card => {
